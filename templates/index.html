@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Simple Clock App</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">  
+    </head>
+    <body>
+        <h1>
+            <span>Welcome, {{name}}!</span>
+            <br>
+            <span>This is a simple clock app</span>
+        </h1>
+        <p>
+            <span>The time is:</span>
+            <br>
+            <span id = 'time_ele'></span>
+        </p>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+        <script>
+        var socket = io();
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+            socket.emit('start_updates');
+
+            setInterval(function() {
+                socket.emit('request_updates');
+            }, 1000);
+
+        });
+
+        socket.on('update', function(data) {
+            console.log('Received update:', data);
+            // Update the web page dynamically with the received data
+            document.getElementById('time_ele').innerHTML = data.time;
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+        });
+        </script>
+    </body>
+</html>
